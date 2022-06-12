@@ -30,9 +30,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class RegisterActivity extends AppCompatActivity implements ContractRegister{
 
-    private static ActivityRegisterBinding activityRegisterBinding;
+//    private static ActivityRegisterBinding activityRegisterBinding;
     private static RegisterViewModel registerViewModel;
-    private static Thread threadCheck;
+    private static Thread threadDelay;
     private static boolean startObservable;
 
     @Override
@@ -42,7 +42,7 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
 
         registerViewModel = new RegisterViewModel(this);
 
-        activityRegisterBinding = DataBindingUtil.setContentView(this,R.layout.activity_register);
+        ActivityRegisterBinding activityRegisterBinding = DataBindingUtil.setContentView(this,R.layout.activity_register);
         activityRegisterBinding.setRegisterViewModel(registerViewModel);
 
         activityRegisterBinding.getRegisterViewModel().setStatusAccountID(false);
@@ -64,12 +64,13 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
         if(accountID == null){
             return;
         }
-        if(threadCheck != null) {
-            if(threadCheck.isAlive()) {
-                threadCheck.interrupt();
+        //Ngắt threadDelay nếu thread đang chạy
+        if(threadDelay != null) {
+            if(threadDelay.isAlive()) {
+                threadDelay.interrupt();
             }
         }
-        activityRegisterBinding.getRegisterViewModel().displayPrgBar.set(false);
+        registerViewModel.displayPrgBar.set(false);
         startObservable = false;
         boolean statusFirstChar = false;
         boolean statusLength = false;
@@ -82,7 +83,7 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
                 String s1 ="Ký tự đầu tiên phải là chữ\n";
                 s = s + s1;
                 view.setError(s);
-                activityRegisterBinding.getRegisterViewModel().setStatusAccountID(false);
+                registerViewModel.setStatusAccountID(false);
             }else {
                 statusFirstChar = true;
             }
@@ -90,14 +91,14 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
         if(!accountID.matches("^[a-zA-Z0-9]{6,20}$")) {
             s = s + "Độ dài ký tự ít nhất 6 và tối đa 20\n";
             view.setError(s);
-            activityRegisterBinding.getRegisterViewModel().setStatusAccountID(false);
+            registerViewModel.setStatusAccountID(false);
         }else {
             statusLength = true;
         }
         if(!accountID.matches("^(?=.*[0-9])([a-zA-Z0-9]+)$")){
             s = s + "Có ít nhất 1 chữ số\n";
             view.setError(s);
-            activityRegisterBinding.getRegisterViewModel().setStatusAccountID(false);
+            registerViewModel.setStatusAccountID(false);
         }else {
             statusNumber = true;
         }
@@ -105,12 +106,12 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
             view.setError(null);
             view.setHelperText("");
             //Sau khi dừng nhập dữ liệu 3s AccountID sẽ chạy Observable gửi dữ liệu về Server để check AccountID hợp lệ
-            threadCheck = new Thread(new Runnable() {
+            threadDelay = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         Thread.sleep(1500);
-                        activityRegisterBinding.getRegisterViewModel().displayPrgBar.set(true);
+                        registerViewModel.displayPrgBar.set(true);
                         Thread.sleep(1500);
                         startObservable = true;
                     } catch (InterruptedException e) {
@@ -142,12 +143,12 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
                             public void onNext(String messFromServer) {
                                 if (messFromServer.equals("AccountIDValid")) {
                                     view.setHelperText("AccountID hợp lệ");
-                                    activityRegisterBinding.getRegisterViewModel().setStatusAccountID(true);
-                                    activityRegisterBinding.getRegisterViewModel().displayPrgBar.set(false);
+                                    registerViewModel.setStatusAccountID(true);
+                                    registerViewModel.displayPrgBar.set(false);
                                 } else {
                                     view.setError("AccountID đã tồn tại");
-                                    activityRegisterBinding.getRegisterViewModel().setStatusAccountID(false);
-                                    activityRegisterBinding.getRegisterViewModel().displayPrgBar.set(false);
+                                    registerViewModel.setStatusAccountID(false);
+                                    registerViewModel.displayPrgBar.set(false);
                                 }
                             }
 
@@ -164,7 +165,7 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
                     }
                 }
             });
-            threadCheck.start();
+            threadDelay.start();
 
         }
     }
@@ -189,10 +190,10 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
                 "[a-zA-Z\\d]{8,20}$");
         if(!b) {
             view.setError("Độ dài ký tự ít nhất 8 và tối đa 20\nCó ít nhất 1 chữ viết hoa\nCó ít nhất 1 chữ số");
-            activityRegisterBinding.getRegisterViewModel().setStatusPassword(false);
+            registerViewModel.setStatusPassword(false);
         }else{
             view.setError(null);
-            activityRegisterBinding.getRegisterViewModel().setStatusPassword(true);
+            registerViewModel.setStatusPassword(true);
         }
     }
 
@@ -204,10 +205,10 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
         view.setErrorIconDrawable(0);
         if (!ConfPassword.equals(passwod)) {
             view.setError("Password không trùng khớp");
-            activityRegisterBinding.getRegisterViewModel().setStatusConfPassword(false);
+            registerViewModel.setStatusConfPassword(false);
         } else {
             view.setError(null);
-            activityRegisterBinding.getRegisterViewModel().setStatusConfPassword(true);
+            registerViewModel.setStatusConfPassword(true);
         }
     }
 
@@ -219,10 +220,10 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
         view.setErrorIconDrawable(0);
         if (!firstName.matches("^[a-zA-Z\\p{L} ]*$")) {
             view.setError("First Name phải là chữ");
-            activityRegisterBinding.getRegisterViewModel().setStatusFirstName(false);
+            registerViewModel.setStatusFirstName(false);
         } else {
             view.setError(null);
-            activityRegisterBinding.getRegisterViewModel().setStatusFirstName(true);
+            registerViewModel.setStatusFirstName(true);
         }
     }
 
@@ -234,10 +235,10 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
         view.setErrorIconDrawable(0);
         if (!lastName.matches("^[a-zA-Z]+\\p{L}$")) {
             view.setError("Last Name phải là chữ");
-            activityRegisterBinding.getRegisterViewModel().setStatusLastName(false);
+            registerViewModel.setStatusLastName(false);
         } else {
             view.setError(null);
-            activityRegisterBinding.getRegisterViewModel().setStatusLastName(true);
+            registerViewModel.setStatusLastName(true);
         }
     }
 
@@ -249,10 +250,10 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
         view.setErrorIconDrawable(0);
         if (!phoneNumber.matches("^[0-9]+$")) {
             view.setError("Phone Number phải là số");
-            activityRegisterBinding.getRegisterViewModel().setStatusPhoneNumber(false);
+            registerViewModel.setStatusPhoneNumber(false);
         } else {
             view.setError(null);
-            activityRegisterBinding.getRegisterViewModel().setStatusPhoneNumber(true);
+            registerViewModel.setStatusPhoneNumber(true);
         }
     }
 
@@ -280,13 +281,13 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
             view.setErrorIconDrawable(0);
             if (!email.matches("^[a-zA-Z0-9_-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+$")) {
                 view.setError("Định dạng email không đúng.\n\"example@email.com\"");
-                activityRegisterBinding.getRegisterViewModel().setStatusEmail(false);
+                registerViewModel.setStatusEmail(false);
             } else {
                 view.setError(null);
-                activityRegisterBinding.getRegisterViewModel().setStatusEmail(true);
+                registerViewModel.setStatusEmail(true);
             }
         }else {
-            activityRegisterBinding.getRegisterViewModel().setStatusEmail(true);
+            registerViewModel.setStatusEmail(true);
         }
     }
 
@@ -296,9 +297,9 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
             return;
         }
         if(!address.equals("")){
-            activityRegisterBinding.getRegisterViewModel().setStatusAddress(true);
+            registerViewModel.setStatusAddress(true);
         }else {
-            activityRegisterBinding.getRegisterViewModel().setStatusAddress(false);
+            registerViewModel.setStatusAddress(false);
         }
     }
 
@@ -306,13 +307,13 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
     public static void setErrorCountry(TextInputLayout view, String country) {
         view.setErrorIconDrawable(0);
         view.setError("Xin hãy chọn mục này");
-        activityRegisterBinding.getRegisterViewModel().setStatusCountry(false);
+        registerViewModel.setStatusCountry(false);
         if(country == null) {
             return;
         }
         if (!country.equals("")) {
             view.setError(null);
-            activityRegisterBinding.getRegisterViewModel().setStatusCountry(true);
+            registerViewModel.setStatusCountry(true);
         }
     }
 
@@ -322,13 +323,13 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
             if (!country.equals("")) {
                 view.setErrorIconDrawable(0);
                 view.setError("Xin hãy chọn mục này");
-                activityRegisterBinding.getRegisterViewModel().setStatusCity(false);
+                registerViewModel.setStatusCity(false);
             }
         }
         if(city != null) {
             if (!city.equals("")) {
                 view.setError(null);
-                activityRegisterBinding.getRegisterViewModel().setStatusCity(true);
+                registerViewModel.setStatusCity(true);
             }
         }
     }
@@ -339,10 +340,10 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
                                    boolean  statusCountry, boolean statusCity, boolean statusAddress, boolean statusPhoneNumber, boolean statusEmail) {
         if(statusAccountID && statusFristName && statusLastName && statusPassword && statusConfPassword &&
                 statusCountry && statusCity && statusAddress && statusPhoneNumber && statusEmail) {
-            activityRegisterBinding.getRegisterViewModel().statusRegister.set("");
+            registerViewModel.statusRegister.set("");
             view.setEnabled(true);
         }else{
-            activityRegisterBinding.getRegisterViewModel().statusRegister.set("Xin hãy nhập đầy đủ các vị trí đánh dấu *");
+            registerViewModel.statusRegister.set("Xin hãy nhập đầy đủ các vị trí đánh dấu *");
             view.setEnabled(false);
         }
     }
