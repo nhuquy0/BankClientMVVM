@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="AccountViewModel"
+            type="com.example.bankclientmvvm.account.AccountViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".account.AccountActivity">
+
+        <TextView
+            android:id="@+id/lblHello"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="@{AccountViewModel.accountName}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Account Balance:"
+            app:layout_constraintEnd_toStartOf="@+id/lblAccountBalance"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/editProfileFragment"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lblHello" />
+
+        <TextView
+            android:id="@+id/lblAccountBalance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="@{AccountViewModel.statusHideShow == true ? AccountViewModel.accountBalanceShow : `******`}"
+            app:layout_constraintStart_toEndOf="@+id/textView"
+            app:layout_constraintTop_toTopOf="@+id/textView" />
+
+        <ImageView
+            android:id="@+id/imgShowHide"
+            android:layout_width="26dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="10dp"
+            android:onClick="@{()->AccountViewModel.imgHideShow()}"
+            android:src="@{AccountViewModel.statusHideShow == true ? @drawable/eye_show : @drawable/eye_hide}"
+            app:layout_constraintBottom_toBottomOf="@+id/textView"
+            app:layout_constraintStart_toEndOf="@+id/lblAccountBalance"
+            app:layout_constraintTop_toTopOf="@+id/textView" />
+
+        <Button
+            android:id="@+id/btnEditProfile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:onClick="@{()->AccountViewModel.showEditProfileFragment()}"
+            android:text="Edit Profile"
+            app:layout_constraintEnd_toEndOf="@+id/btnTransferMoney"
+            app:layout_constraintStart_toStartOf="@+id/btnTransferMoney"
+            app:layout_constraintTop_toBottomOf="@+id/btnTransferMoney" />
+
+        <Button
+            android:id="@+id/btnTransferMoney"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:onClick="@{()->AccountViewModel.showTrasferMoneyDialog()}"
+            android:text="Transfer Money"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imgShowHide" />
+
+        <Button
+            android:id="@+id/btnExitAccount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:onClick="@{()->AccountViewModel.exitAccount()}"
+            android:text="Exit Account"
+            app:layout_constraintEnd_toEndOf="@+id/btnTransferMoney"
+            app:layout_constraintHorizontal_bias="0.615"
+            app:layout_constraintStart_toStartOf="@+id/btnTransferMoney"
+            app:layout_constraintTop_toBottomOf="@+id/btnEditProfile" />
+
+        <FrameLayout
+            android:id="@+id/editProfileFragment"
+            android:layout_width="350dp"
+            android:layout_height="650dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="40dp"
+            android:elevation="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </FrameLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

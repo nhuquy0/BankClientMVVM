@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">BankClientMVVM</string>
+    <string name="ipAdress">192.168.1.102</string>
+    <string-array name="cities_vietnam_array">
+        <item>Ho Chi Minh</item>
+        <item>Da Nang</item>
+        <item>Ha Noi</item>
+        <item>Ca Mau</item>
+    </string-array>
+    <string-array name="cities_singapore_array">
+        <item>Singapore</item>
+    </string-array>
+    <string-array name="cities_thailand_array">
+        <item>Krung Thep Maha Nakhon</item>
+        <item>Nonthaburi</item>
+        <item>Nakhon Ratchasima</item>
+        <item>Chiang Mai</item>
+    </string-array>
+    <string-array name="cities_china_array">
+        <item>Beijing</item>
+        <item>Guangzhou</item>
+        <item>Hainan</item>
+        <item>Sanghai</item>
+    </string-array>
+    <string-array name="countries_array">
+        <item>Viet Nam</item>
+        <item>Singapore</item>
+        <item>Thailand</item>
+        <item>China</item>
+    </string-array>
+    <string-array name="prefix_phoneNumber_array">
+        <item>+84</item>
+        <item>+65</item>
+        <item>+66</item>
+        <item>+86</item>
+    </string-array>
+</resources>

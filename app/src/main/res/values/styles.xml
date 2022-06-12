@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="GreenText" parent="Widget.Design.TextInputLayout">
+        <item name="helperTextTextAppearance">@color/green</item>
+    </style>
+    <style name="GreenTex" parent="@android:style/TextAppearance">
+        <item name="android:textColor">#00FF00</item>
+    </style>
+</resources>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="LoginViewModel"
+            type="com.example.bankclientmvvm.login.LoginViewModel" />
+        <import type="android.text.InputType"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".login.LoginActivity">
+
+        <EditText
+            android:id="@+id/txtIPAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="136dp"
+            android:ems="10"
+            android:hint="192.168.1.1"
+            android:inputType="textPersonName"
+            android:minHeight="48dp"
+            android:text="@={LoginViewModel.ipAddress}"
+            android:textColor="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="104dp"
+            android:text="Login"
+            android:textSize="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/txtAccountID"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/txtAccountID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="205dp"
+            android:ems="10"
+            android:hint="AccountID"
+            android:inputType="textPersonName"
+            android:minHeight="48dp"
+            android:text="@={LoginViewModel.accountID}"
+            app:layout_constraintStart_toStartOf="@+id/txtIPAddress"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/txtPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:ems="10"
+            android:hint="Password"
+            android:inputType="@{LoginViewModel.flagShowHide ? (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD) : InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD}"
+            android:minHeight="48dp"
+            android:text="@={LoginViewModel.password}"
+            app:layout_constraintStart_toStartOf="@+id/txtAccountID"
+            app:layout_constraintTop_toBottomOf="@+id/txtAccountID" />
+
+        <TextView
+            android:id="@+id/lblRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Register here"
+            android:onClick="changeToRegisterActivity"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
+
+        <TextView
+            android:id="@+id/lblForgetPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="Forget Password"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lblRegister" />
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:text="Login"
+            android:onClick="@{()->LoginViewModel.Login()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtPassword" />
+
+        <Button
+            android:id="@+id/btnShowHide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{LoginViewModel.flagShowHide ? `Show` : `Hide`}"
+            android:onClick="@{()->LoginViewModel.setFlagShowHide()}"
+            app:layout_constraintStart_toEndOf="@+id/txtPassword"
+            app:layout_constraintTop_toTopOf="@+id/txtPassword" />
+
+        <TextView
+            android:id="@+id/lblStatusLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@{LoginViewModel.statusLogin}"
+            app:layout_constraintEnd_toEndOf="@+id/btnLogin"
+            app:layout_constraintStart_toStartOf="@+id/btnLogin"
+            app:layout_constraintTop_toBottomOf="@+id/txtPassword" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
