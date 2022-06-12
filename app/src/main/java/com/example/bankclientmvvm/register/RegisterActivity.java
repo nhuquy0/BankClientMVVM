@@ -30,7 +30,6 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class RegisterActivity extends AppCompatActivity implements ContractRegister{
 
-//    private static ActivityRegisterBinding activityRegisterBinding;
     private static RegisterViewModel registerViewModel;
     private static Thread threadDelay;
     private static boolean startObservable;
@@ -45,6 +44,7 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
         ActivityRegisterBinding activityRegisterBinding = DataBindingUtil.setContentView(this,R.layout.activity_register);
         activityRegisterBinding.setRegisterViewModel(registerViewModel);
 
+        //Khởi tạo các giá trị
         activityRegisterBinding.getRegisterViewModel().setStatusAccountID(false);
         activityRegisterBinding.getRegisterViewModel().setStatusPassword(false);
         activityRegisterBinding.getRegisterViewModel().setStatusConfPassword(false);
