@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:text="@{AccountViewModel.accountName}"
+            android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -28,8 +29,10 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
             android:text="Account Balance:"
+            android:textSize="20sp"
             app:layout_constraintEnd_toStartOf="@+id/lblAccountBalance"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/editProfileFragment"
@@ -42,6 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="@{AccountViewModel.statusHideShow == true ? AccountViewModel.accountBalanceShow : `******`}"
+            android:textSize="20sp"
             app:layout_constraintStart_toEndOf="@+id/textView"
             app:layout_constraintTop_toTopOf="@+id/textView" />
 

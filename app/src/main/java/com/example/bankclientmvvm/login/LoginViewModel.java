@@ -84,15 +84,19 @@ Account account;
         modelNetwork.sendDataTCP("login"+ "#" + account.getAccountID() + "#" + mainLoginView.getUUIDSharePref());
         modelNetwork.readDataTCP();
         String mesRecv = modelNetwork.getMesFromServer();
-        boolean valuate = BCrypt.checkpw(password, mesRecv);
-        if(valuate) {
-            modelNetwork.sendDataTCP("LoginSuccess");
-            mainLoginView.saveAccountIDSharePref(accountID);
-            //Change activity here
-            mainLoginView.changeToAccountActivity();
+        if(!mesRecv.equals("")) {
+            boolean valuate = BCrypt.checkpw(password, mesRecv);
+            if (valuate) {
+                modelNetwork.sendDataTCP("LoginSuccess");
+                mainLoginView.saveAccountIDSharePref(accountID);
+                //Change activity here
+                mainLoginView.changeToAccountActivity();
+            } else {
+                modelNetwork.sendDataTCP("LoginFailed");
+                statusLogin.set("AccountID and Password incorrect");
+            }
         }else{
-            modelNetwork.sendDataTCP("LoginFailed");
-            statusLogin.set("AccountID and Password incorrect");
+            statusLogin.set("Không thể kết nối đến máy chủ");
         }
     }
 

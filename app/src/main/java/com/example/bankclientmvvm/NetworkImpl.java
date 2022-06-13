@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
@@ -59,7 +60,9 @@ public class NetworkImpl implements NetworkInterface.Network {
             @Override
             public void run() {
                 try {
-                    socketTCP = new Socket(ipAddress, portSendData);
+//                    socketTCP = new Socket(ipAddress, portSendData);
+                    socketTCP = new Socket();
+                    socketTCP.connect(new InetSocketAddress(ipAddress, portSendData), 3000);
                 } catch(SocketException ex) {
                     System.out.println("I/O error: " + ex.getMessage());
                 } catch(IOException e) {

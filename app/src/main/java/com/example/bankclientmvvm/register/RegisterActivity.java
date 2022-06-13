@@ -1,14 +1,18 @@
 package com.example.bankclientmvvm.register;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.DataBindingUtil;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -38,7 +42,6 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-
         registerViewModel = new RegisterViewModel(this);
 
         ActivityRegisterBinding activityRegisterBinding = DataBindingUtil.setContentView(this,R.layout.activity_register);
@@ -70,6 +73,7 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
                 threadDelay.interrupt();
             }
         }
+        Context context = view.getContext();
         registerViewModel.displayPrgBar.set(false);
         startObservable = false;
         boolean statusFirstChar = false;
@@ -120,17 +124,17 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
                     if(startObservable) {
                         // Create the Observable
                         Observable<String> singleTaskObservable = Observable
-                                .create(new ObservableOnSubscribe<String>() {
-                                    @Override
-                                    public void subscribe(ObservableEmitter<String> emitter) throws Exception {
-                                        if (!emitter.isDisposed()) {
-                                            emitter.onNext(registerViewModel.checkAccountID());
-                                            emitter.onComplete();
-                                        }
+                            .create(new ObservableOnSubscribe<String>() {
+                                @Override
+                                public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                                    if (!emitter.isDisposed()) {
+                                        emitter.onNext(registerViewModel.checkAccountID());
+                                        emitter.onComplete();
                                     }
-                                })
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread());
+                                }
+                            })
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread());
 
                         // Subscribe to the Observable and get the emitted object
                         singleTaskObservable.subscribe(new Observer<String>() {
@@ -142,6 +146,8 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
                             @Override
                             public void onNext(String messFromServer) {
                                 if (messFromServer.equals("AccountIDValid")) {
+//                                    view.setHelperTextColor(ColorStateList.valueOf(ContextCompat.getColor(context,
+//                                            R.color.green)));
                                     view.setHelperText("AccountID hợp lệ");
                                     registerViewModel.setStatusAccountID(true);
                                     registerViewModel.displayPrgBar.set(false);
