@@ -11,8 +11,6 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -146,8 +144,8 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
                             @Override
                             public void onNext(String messFromServer) {
                                 if (messFromServer.equals("AccountIDValid")) {
-//                                    view.setHelperTextColor(ColorStateList.valueOf(ContextCompat.getColor(context,
-//                                            R.color.green)));
+                                    view.setHelperTextColor(ColorStateList.valueOf(ContextCompat.getColor(context,
+                                            R.color.green)));
                                     view.setHelperText("AccountID hợp lệ");
                                     registerViewModel.setStatusAccountID(true);
                                     registerViewModel.displayPrgBar.set(false);
