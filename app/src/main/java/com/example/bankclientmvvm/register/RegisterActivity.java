@@ -114,7 +114,7 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
                     try {
                         Thread.sleep(1500);
                         registerViewModel.displayPrgBar.set(true);
-                        Thread.sleep(1500);
+                        Thread.sleep(500);
                         startObservable = true;
                     } catch (InterruptedException e) {
                         e.printStackTrace();
