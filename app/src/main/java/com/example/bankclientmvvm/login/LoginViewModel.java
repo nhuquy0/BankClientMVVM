@@ -1,31 +1,44 @@
 package com.example.bankclientmvvm.login;
 
+import android.util.Log;
+import android.widget.Toast;
+
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
 
 import com.example.bankclientmvvm.Account;
+import com.example.bankclientmvvm.ApiService;
 import com.example.bankclientmvvm.BR;
+import com.example.bankclientmvvm.EmptyCallback;
 import com.example.bankclientmvvm.NetworkImpl;
 
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class LoginViewModel extends BaseObservable{
 
-    private String accountID, password, ipAddress;
+    private String accountID, password;
     private boolean flagShowHide;
 
     public ObservableField<String> statusLogin = new ObservableField<>();
 
     private final ContractLogin.LoginView mainLoginView;
     private final NetworkImpl modelNetwork;
-Account account;
+    Account account;
+
     public LoginViewModel(ContractLogin.LoginView mainLoginView) {
         this.mainLoginView = mainLoginView;
         modelNetwork = new NetworkImpl();
         account = new Account();
         flagShowHide = true;
+
     }
 
     @Bindable
@@ -63,53 +76,65 @@ Account account;
         notifyPropertyChanged(BR.password);
     }
 
-    @Bindable
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-        notifyPropertyChanged(BR.ipAddress);
-    }
-
     public void Login(){
         if(password.length() < 6){
             statusLogin.set("AccountID and password invalid");
             return;
         }
-//        String ipAddress;
-        modelNetwork.setIPAddress(ipAddress);
-        modelNetwork.createConnect();
-        modelNetwork.sendDataTCP("login"+ "#" + account.getAccountID() + "#" + mainLoginView.getUUIDSharePref());
-        modelNetwork.readDataTCP();
-        String mesRecv = modelNetwork.getMesFromServer();
-        if(!mesRecv.equals("")) {
-            boolean valuate = BCrypt.checkpw(password, mesRecv);
-            if (valuate) {
-                modelNetwork.sendDataTCP("LoginSuccess");
-                mainLoginView.saveAccountIDSharePref(accountID);
-                //Change activity here
-                mainLoginView.changeToAccountActivity();
-            } else {
-                modelNetwork.sendDataTCP("LoginFailed");
-                statusLogin.set("AccountID and Password incorrect");
+        //Call api get password
+        ApiService.apiService.login(getAccountID()).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String passbcrypt = response.body();
+                if (passbcrypt != null) {
+                    Log.e("user", passbcrypt);
+                    boolean valuate = BCrypt.checkpw(password, passbcrypt);
+                    //If successful check then call api autologin and change Activity, otherwise set label incorrect password
+                    if (valuate) {
+                        Log.e("Login","LoginSuccess");
+                        ArrayList<String> accountStrArrList = new ArrayList<>();
+                        accountStrArrList.add(getAccountID());
+                        accountStrArrList.add(mainLoginView.getUUIDSharePref());
+                        //Call api create autologin
+                        ApiService.apiService.loginSuccess(accountStrArrList).enqueue(new EmptyCallback());
+                        mainLoginView.saveAccountIDSharePref(getAccountID());
+                        //Change to AccountActivity here
+//                        mainLoginView.changeToAccountActivity();
+                    } else {
+                        statusLogin.set("AccountID and Password incorrect");
+                    }
+                }
             }
-        }else{
-            statusLogin.set("Không thể kết nối đến máy chủ");
-        }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e("Login", String.valueOf(t));
+            }
+        });
     }
 
-    public void sendAutoLogin(){
-        modelNetwork.setIPAddress(ipAddress);
-        modelNetwork.createConnect();
-        modelNetwork.sendDataTCP("autologin"+ "#" + mainLoginView.getAccountIDSharePref() + "#" + mainLoginView.getUUIDSharePref());
-        modelNetwork.readDataTCP();
-        String mesRecv;
-        mesRecv = modelNetwork.getMesFromServer();
-        if(mesRecv.equals("LoginSuccess")) {
-            //Change activity here
-            mainLoginView.changeToAccountActivity();
-        }
+    public void sendAutoLogin(String accountID, String uuid){
+        ArrayList<String> accountStrArrList = new ArrayList<>();
+        accountStrArrList.add(accountID);
+        accountStrArrList.add(uuid);
+        ApiService.apiService.autologin(accountStrArrList).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                String messRecv = response.body();
+                if(messRecv != null){
+                    Log.e("Login", messRecv);
+                    if(messRecv.equals("AutoLoginSuccess")) {
+                        //Change to AccountActivity here
+//                        mainLoginView.changeToAccountActivity();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e("Login", String.valueOf(t));
+            }
+        });
+
     }
 }

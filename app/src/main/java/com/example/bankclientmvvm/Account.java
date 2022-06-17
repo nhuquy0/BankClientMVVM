@@ -5,17 +5,17 @@ import java.math.BigDecimal;
 
 public class Account implements Serializable{
 
-    String accountID = null;
-    String password = null;
-    String accountName = null;
-    BigDecimal accountBalance = null;
-    String firstName = null;
-    String lastName = null;
-    String address = null;
-    String city = null;
-    String country = null;
-    String phoneNumber = null;
-    String email = null;
+    private String accountID = null;
+    private String password = null;
+    private String accountName = null;
+    private BigDecimal accountBalance = null;
+    private String firstName = null;
+    private String lastName = null;
+    private String address = null;
+    private String city = null;
+    private String country = null;
+    private String phoneNumber = null;
+    private String email = null;
 
     private final double HANGSOLAISUAT = 0.035;
 

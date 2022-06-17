@@ -8,13 +8,19 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
+import com.example.bankclientmvvm.ApiService;
 import com.example.bankclientmvvm.R;
 import com.example.bankclientmvvm.register.RegisterActivity;
 import com.example.bankclientmvvm.account.AccountActivity;
 import com.example.bankclientmvvm.databinding.ActivityLoginBinding;
 
 import java.util.UUID;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements ContractLogin.LoginView{
 
@@ -30,11 +36,12 @@ public class LoginActivity extends AppCompatActivity implements ContractLogin.Lo
         loginViewModel = new LoginViewModel(this);
         activityLoginBinding.setLoginViewModel(loginViewModel);
 
-        activityLoginBinding.getLoginViewModel().setIpAddress("192.168.1.102");
         createUUID();
 
-        if(getUUIDSharePref() != null && getAccountIDSharePref() != null){
-            loginViewModel.sendAutoLogin();
+        String accoundID = getAccountIDSharePref();
+        String uuid = getUUIDSharePref();
+        if(accoundID != null && uuid != null){
+            loginViewModel.sendAutoLogin(accoundID, uuid);
         }
     }
 

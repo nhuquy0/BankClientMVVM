@@ -15,45 +15,31 @@
         android:layout_height="match_parent"
         tools:context=".login.LoginActivity">
 
-        <EditText
-            android:id="@+id/txtIPAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="136dp"
-            android:ems="10"
-            android:hint="192.168.1.1"
-            android:inputType="textPersonName"
-            android:minHeight="48dp"
-            android:text="@={LoginViewModel.ipAddress}"
-            android:textColor="#000000"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <TextView
             android:id="@+id/textViewLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="104dp"
+            android:layout_marginTop="80dp"
             android:text="Login"
             android:textSize="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/txtAccountID"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/txtAccountID"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="205dp"
+            android:layout_marginTop="50dp"
             android:ems="10"
             android:hint="AccountID"
             android:inputType="textPersonName"
             android:minHeight="48dp"
             android:text="@={LoginViewModel.accountID}"
-            app:layout_constraintStart_toStartOf="@+id/txtIPAddress"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="@+id/textViewLogin"
+            app:layout_constraintStart_toStartOf="@+id/textViewLogin"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLogin" />
 
         <EditText
             android:id="@+id/txtPassword"
