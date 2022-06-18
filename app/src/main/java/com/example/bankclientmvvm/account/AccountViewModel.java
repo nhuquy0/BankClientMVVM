@@ -10,15 +10,22 @@ import androidx.databinding.ObservableField;
 import com.example.bankclientmvvm.Account;
 import com.example.bankclientmvvm.BR;
 import com.example.bankclientmvvm.NetworkImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.bankclientmvvm.api.ApiService;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AccountViewModel extends BaseObservable {
 
@@ -32,8 +39,9 @@ public class AccountViewModel extends BaseObservable {
     private BigDecimal moneyTransfer;
     private BigDecimal accountBalance;
     private final BigDecimal tenThousand;
-    public ObservableField<String> accountBalanceShow;
     public ObservableField<Boolean> statusHideShow;
+    public ObservableField<Boolean> transferSuccess;
+    public ObservableField<String> accountBalanceShow;
     public ObservableField<String> statusEditProfile;
     public ObservableField<String> statusTransferMoney;
     public ObservableArrayList<String> citiesArrayList;
@@ -50,6 +58,7 @@ public class AccountViewModel extends BaseObservable {
         tenThousand = new BigDecimal("10000");
         moneyTransfer = new BigDecimal("0");
         statusHideShow.set(false);
+        transferSuccess = new ObservableField<>();
     }
 
     public void setCitiesArrayList(String[] citiesStrArray) {
@@ -206,7 +215,7 @@ public class AccountViewModel extends BaseObservable {
         notifyPropertyChanged(BR.selectedCountryPosition);
     }
 
-    public void setAccount(Account account) {
+    private void setAccount(Account account) {
         this.account = account;
     }
 
@@ -215,19 +224,24 @@ public class AccountViewModel extends BaseObservable {
     }
 
     public void getAccountFromServer(){
-        modelNetwork.createConnect();
-        modelNetwork.sendDataTCP("account" + "#" + mainAccountView.getAccountIDSharePref());
-        modelNetwork.readDataTCP();
-        String mesRecv = "";
-        mesRecv = modelNetwork.getMesFromServer();
-        ObjectMapper objectMapper = new ObjectMapper();
+        ApiService.apiService.getAccount(mainAccountView.getAccountIDSharePref()).enqueue(new Callback<Account>() {
+            @Override
+            public void onResponse(Call<Account> call, Response<Account> response) {
+                Account account = response.body();
+                if(account != null){
+                    Log.e("Account",account.toString());
+                    setAccount(account);
+                    setAccountName(account.getAccountName());
+                    setLabelAccountBalance();
+                    setAccountBalance(account.getAccountBalance());
+                }
+            }
 
-        try {
-            setAccount(objectMapper.readValue(mesRecv, Account.class));
-            System.out.println(account);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void onFailure(Call<Account> call, Throwable t) {
+                Log.e("Account",String.valueOf(t));
+            }
+        });
     }
 
     public void editProfile() {
@@ -294,31 +308,43 @@ public class AccountViewModel extends BaseObservable {
                 s = s.substring(0, s.length() - 2);
                 Log.e("BankClient", s);
 
+
                 //Send string-query to Server
-                modelNetwork.createConnect();
-                modelNetwork.sendDataTCP("editprofile#" + account.getAccountID() + "#" + s);
-                modelNetwork.readDataTCP();
-                String mesRecv = "";
-                mesRecv = modelNetwork.getMesFromServer();
-                if (mesRecv.equals("editprofilesuccess")) {
-                    //Cập nhật lại Account trong AccountActivity
-                    setAccount(account);
-                    setAccountName(account.getAccountName());
-                    //update account success
-                    mainAccountView.showToast("Update account success");
-                    //Xoá fragment
-                    removeEditProfileFragment();
-                }
+                ArrayList<String> accountStrArrList = new ArrayList<>();
+                accountStrArrList.add(account.getAccountID());
+                accountStrArrList.add(s);
+                ApiService.apiService.editProfile(accountStrArrList).enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        String messRecv = response.body();
+                        if(messRecv != null){
+                            if (messRecv.equals("EditProfileSuccess")) {
+                                Log.e("Account",messRecv);
+                                //Cập nhật lại Account trong AccountActivity
+                                setAccount(account);
+                                setAccountName(account.getAccountName());
+                                //update account success
+                                mainAccountView.showToast("Update account success");
+                                //Xoá fragment
+                                removeEditProfileFragment();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+
+                    }
+                });
             }
         }
-        //Xoá fragment
+        //Không có gì thay đổi. Xoá fragment
         removeEditProfileFragment();
     }
 
-    public boolean transferMoney(){
+    public void transferMoney(){
         if(getAccountID2() == null || getStrMoneyTransfer() == null || getAccountID2().equals("") || getStrMoneyTransfer().equals("")){
             statusTransferMoney.set("Please input info transfer");
-            return false;
         }
         String moneyTransferNumber = null;
         if(getStrMoneyTransfer().contains(".") ) {
@@ -330,33 +356,47 @@ public class AccountViewModel extends BaseObservable {
 
         if(moneyTransfer.compareTo(tenThousand) <0){
             statusTransferMoney.set("Money transfer >= 10000");
-            return false;
         }
 
         if(moneyTransfer.compareTo(account.getAccountBalance()) >0){
             statusTransferMoney.set("The account does not have enough money");
-            return false;
         }
 
-        modelNetwork.createConnect();
-        modelNetwork.sendDataTCP("transfermoney#" + account.getAccountID() + "#" + getAccountID2() + "#" + moneyTransfer);
-        modelNetwork.readDataTCP();
-        String mesRecv = "";
-        mesRecv = modelNetwork.getMesFromServer();
-        String[] messRecvArray = mesRecv.split("#");
-        if(messRecvArray[0].equals("transfermoneysuccess")){
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                account = objectMapper.readValue(messRecvArray[1], Account.class);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
+        ArrayList<String> accountStrArrList = new ArrayList<>();
+        accountStrArrList.add(account.getAccountID());
+        accountStrArrList.add(getAccountID2());
+        accountStrArrList.add(String.valueOf(moneyTransfer));
+
+        Thread threadTransferMoney = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Response response = ApiService.apiService.moneyTransfer(accountStrArrList).execute();
+                    if(response.code() == 200){
+                        Account account = (Account) response.body();
+                        if(account != null){
+                            setAccount(account);
+                            setLabelAccountBalance();
+                            transferSuccess.set(true);
+                        }
+                    }else if(response.code() == 404){
+                        statusTransferMoney.set("accountID incorrect");
+                        transferSuccess.set(false);
+                    }else if(response.code() == 424) {
+                        statusTransferMoney.set("Transfer failed");
+                        transferSuccess.set(false);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            setLabelAccountBalance();
-            return true;
-        }else if(mesRecv.equals("transfermoneyWrongID")){
-            statusTransferMoney.set("accountID incorrect");
+        });
+        threadTransferMoney.start();
+        try {
+            threadTransferMoney.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        return false;
     }
 
     public void exitAccount(){

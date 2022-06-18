@@ -1,16 +1,15 @@
 package com.example.bankclientmvvm.login;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
 
 import com.example.bankclientmvvm.Account;
-import com.example.bankclientmvvm.ApiService;
+import com.example.bankclientmvvm.api.ApiService;
 import com.example.bankclientmvvm.BR;
-import com.example.bankclientmvvm.EmptyCallback;
+import com.example.bankclientmvvm.api.EmptyCallback;
 import com.example.bankclientmvvm.NetworkImpl;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -99,7 +98,7 @@ public class LoginViewModel extends BaseObservable{
                         ApiService.apiService.loginSuccess(accountStrArrList).enqueue(new EmptyCallback());
                         mainLoginView.saveAccountIDSharePref(getAccountID());
                         //Change to AccountActivity here
-//                        mainLoginView.changeToAccountActivity();
+                        mainLoginView.changeToAccountActivity();
                     } else {
                         statusLogin.set("AccountID and Password incorrect");
                     }
@@ -125,7 +124,7 @@ public class LoginViewModel extends BaseObservable{
                     Log.e("Login", messRecv);
                     if(messRecv.equals("AutoLoginSuccess")) {
                         //Change to AccountActivity here
-//                        mainLoginView.changeToAccountActivity();
+                        mainLoginView.changeToAccountActivity();
                     }
                 }
             }

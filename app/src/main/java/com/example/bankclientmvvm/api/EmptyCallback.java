@@ -1,4 +1,4 @@
-package com.example.bankclientmvvm;
+package com.example.bankclientmvvm.api;
 
 import retrofit2.Call;
 import retrofit2.Callback;

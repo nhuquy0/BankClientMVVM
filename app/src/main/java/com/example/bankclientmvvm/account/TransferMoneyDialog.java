@@ -1,28 +1,17 @@
-package com.example.bankclientmvvm;
+package com.example.bankclientmvvm.account;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.bankclientmvvm.account.AccountViewModel;
+import com.example.bankclientmvvm.R;
 import com.example.bankclientmvvm.databinding.DialogTransferMoneyBinding;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.Locale;
 
 public class TransferMoneyDialog extends DialogFragment {
 
@@ -40,6 +29,7 @@ public class TransferMoneyDialog extends DialogFragment {
         dialogTransferMoneyBinding.setAccountViewModel(accountViewModel);
         dialogTransferMoneyBinding.getAccountViewModel().setAccountID2("");
         dialogTransferMoneyBinding.getAccountViewModel().setStrMoneyTransfer("");
+        dialogTransferMoneyBinding.getAccountViewModel().transferSuccess.set(false);
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         //Phải tạo TextWatcher riêng, rồi bỏ vào edittext.addTextChangedListener(textWatcher)
@@ -141,8 +131,8 @@ public class TransferMoneyDialog extends DialogFragment {
             @Override
             public void onClick(View view){
 //                User clicked OK button
-                if(accountViewModel.transferMoney()){
-
+                accountViewModel.transferMoney();
+                if(Boolean.TRUE.equals(accountViewModel.transferSuccess.get())){
                     dialog.dismiss();
                 };
             }

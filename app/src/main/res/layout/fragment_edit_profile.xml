@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="650dp"
         android:background="@drawable/background"
-        tools:context=".EditProfileFragment">
+        tools:context=".account.EditProfileFragment">
 
         <EditText
             android:id="@+id/txtFirstName"
@@ -97,7 +97,7 @@
             android:inputType="textPersonName"
             android:text="@={AccountViewModel.phoneNumber}"
             app:layout_constraintStart_toStartOf="@+id/guideline3"
-            app:layout_constraintTop_toBottomOf="@+id/spinCountry" />
+            app:layout_constraintTop_toBottomOf="@+id/spinCity" />
 
         <TextView
             android:id="@+id/textView10"
@@ -129,7 +129,7 @@
             android:selectedItemPosition="@={AccountViewModel.selectedCountryPosition}"
             app:layout_constraintEnd_toEndOf="@+id/txtFirstName"
             app:layout_constraintStart_toStartOf="@+id/guideline3"
-            app:layout_constraintTop_toBottomOf="@+id/spinCity" />
+            app:layout_constraintTop_toBottomOf="@+id/txtAddress" />
 
         <TextView
             android:id="@+id/textView5"
@@ -155,13 +155,13 @@
             android:id="@+id/spinCity"
             android:layout_width="0dp"
             android:layout_height="35dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="20dp"
             android:entries="@{AccountViewModel.citiesArrayList}"
             android:selectedItemPosition="@={AccountViewModel.selectedCityPosition}"
             app:layout_constraintEnd_toEndOf="@+id/txtFirstName"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/guideline3"
-            app:layout_constraintTop_toBottomOf="@+id/txtAddress" />
+            app:layout_constraintTop_toBottomOf="@+id/spinCountry" />
 
         <TextView
             android:id="@+id/textView12"

@@ -8,19 +8,13 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import com.example.bankclientmvvm.ApiService;
 import com.example.bankclientmvvm.R;
 import com.example.bankclientmvvm.register.RegisterActivity;
 import com.example.bankclientmvvm.account.AccountActivity;
 import com.example.bankclientmvvm.databinding.ActivityLoginBinding;
 
 import java.util.UUID;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements ContractLogin.LoginView{
 

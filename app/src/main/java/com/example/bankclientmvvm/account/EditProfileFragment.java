@@ -1,4 +1,4 @@
-package com.example.bankclientmvvm;
+package com.example.bankclientmvvm.account;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 
+import com.example.bankclientmvvm.R;
 import com.example.bankclientmvvm.account.AccountActivity;
 import com.example.bankclientmvvm.account.AccountViewModel;
 import com.example.bankclientmvvm.account.ContractAccount;
@@ -36,7 +37,7 @@ public class EditProfileFragment extends Fragment{
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        FragmentEditProfileBinding fragmentEditProfileBinding = DataBindingUtil.inflate(inflater,R.layout.fragment_edit_profile,container,false);
+        FragmentEditProfileBinding fragmentEditProfileBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_edit_profile,container,false);
         View view = fragmentEditProfileBinding.getRoot();
         fragmentEditProfileBinding.setAccountViewModel(accountViewModel);
 
@@ -48,6 +49,7 @@ public class EditProfileFragment extends Fragment{
         fragmentEditProfileBinding.getAccountViewModel().setAccountName(accountViewModel.getAccount().getAccountName());
 
         String[] countriesStrArray = accountActivity.getCountriesArrayXML();
+        breakall:
         for(int i = 0; i < countriesStrArray.length ; i++) {
             if(countriesStrArray[i].equals(accountViewModel.getAccount().getCountry())){
                 fragmentEditProfileBinding.getAccountViewModel().setSelectedCountryPosition(i);
@@ -55,11 +57,10 @@ public class EditProfileFragment extends Fragment{
                 for(int j = 0; j < citiesStrArray.length ; j++) {
                     if(citiesStrArray[j].equals(accountViewModel.getAccount().getCity())){
                         fragmentEditProfileBinding.getAccountViewModel().setSelectedCityPosition(j);
-                        break;
+                        break breakall;
                     }
                 }
             }
-            break;
         }
         return view;
     }

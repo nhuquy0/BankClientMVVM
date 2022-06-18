@@ -11,9 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.bankclientmvvm.EditProfileFragment;
 import com.example.bankclientmvvm.R;
-import com.example.bankclientmvvm.TransferMoneyDialog;
 import com.example.bankclientmvvm.databinding.ActivityAccountBinding;
 import com.example.bankclientmvvm.login.LoginActivity;
 
@@ -38,10 +36,8 @@ public class AccountActivity extends AppCompatActivity implements ContractAccoun
         ActivityAccountBinding activityAccountBinding = DataBindingUtil.setContentView(this,R.layout.activity_account);
         activityAccountBinding.setAccountViewModel(accountViewModel);
 
+        //Lấy account từ Server và gắn dữ liệu lên nhãn
         accountViewModel.getAccountFromServer();
-        activityAccountBinding.getAccountViewModel().setAccountName(accountViewModel.getAccount().getAccountName());
-        activityAccountBinding.getAccountViewModel().setLabelAccountBalance();
-        accountViewModel.setAccountBalance(accountViewModel.getAccount().getAccountBalance());
 
     }
 
