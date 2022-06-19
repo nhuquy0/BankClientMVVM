@@ -31,7 +31,6 @@ public interface ApiService {
             .build()
             .create(ApiService.class);
 
-    //Get tách link
     @POST("/login")
     Call<String> login(@Body String accountStrArrList);
 
@@ -54,34 +53,9 @@ public interface ApiService {
     Call<Boolean> register(@Body Account account);
 
     //Link có tham số dạng động
-    //Link API: https://api.nationalize.io/group/1/users
     @GET("/checkaccountid/{accountID}")
     Call<Boolean> checkAccountID(@Path("accountID") String accountID);
 
     @GET("/checkemail/{email}")
     Call<Boolean> checkEmail(@Path("email") String email);
-
-    //Get full link
-//    @GET("/?name=nathaniel")
-//    Call<User> getUser1();
-
-    //Get full link
-//    @GET("/")
-//    Call<User> getUser2(@QueryMap Map<String, String> options);
-
-    //Link API: https://api.nationalize.io/list/
-//    @GET(/list/)
-//    Call<User> getUser1();
-
-
-    //Link có tham số dạng động
-    //Link API: https://api.nationalize.io/group/1/users
-//    @GET(/group/{id}/users)
-//    Call<User> getUser1(@Path("id") int groupID);
-
-    //Link có tham số dạng động và tĩnh
-    //Link API: https://api.nationalize.io/group/1/users?sort=desc
-//    @GET(/group/{id}/users)
-//    Call<User> getUser1(@Path("id") int groupID,
-//    @Query("sort") String sort);
 }

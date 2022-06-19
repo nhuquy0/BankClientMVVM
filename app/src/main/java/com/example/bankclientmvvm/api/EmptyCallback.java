@@ -1,17 +1,19 @@
 package com.example.bankclientmvvm.api;
 
+import androidx.annotation.NonNull;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class EmptyCallback implements Callback {
+public class EmptyCallback<T> implements Callback<T> {
     @Override
-    public void onResponse(Call call, Response response) {
+    public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
 
     }
 
     @Override
-    public void onFailure(Call call, Throwable t) {
+    public void onFailure(@NonNull Call<T> call, @NonNull Throwable t) {
 
     }
 }
