@@ -11,7 +11,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface ApiService {
 
@@ -47,6 +49,18 @@ public interface ApiService {
 
     @POST("/transfermoney")
     Call<Account> moneyTransfer(@Body ArrayList<String> accountStrArrList);
+
+    @POST("/register")
+    Call<Boolean> register(@Body Account account);
+
+    //Link có tham số dạng động
+    //Link API: https://api.nationalize.io/group/1/users
+    @GET("/checkaccountid/{accountID}")
+    Call<Boolean> checkAccountID(@Path("accountID") String accountID);
+
+    @GET("/checkemail/{email}")
+    Call<Boolean> checkEmail(@Path("email") String email);
+
     //Get full link
 //    @GET("/?name=nathaniel")
 //    Call<User> getUser1();

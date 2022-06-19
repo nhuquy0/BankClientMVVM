@@ -1,10 +1,5 @@
 package com.example.bankclientmvvm.register;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.databinding.BindingAdapter;
-import androidx.databinding.DataBindingUtil;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -17,24 +12,26 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.databinding.BindingAdapter;
+import androidx.databinding.DataBindingUtil;
+
 import com.example.bankclientmvvm.R;
+import com.example.bankclientmvvm.api.ApiService;
 import com.example.bankclientmvvm.databinding.ActivityRegisterBinding;
 import com.example.bankclientmvvm.login.LoginActivity;
 import com.google.android.material.textfield.TextInputLayout;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableEmitter;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegisterActivity extends AppCompatActivity implements ContractRegister{
 
     private static RegisterViewModel registerViewModel;
-    private static Thread threadDelay;
-    private static boolean startObservable;
+    private static Thread threadDelayCheckAccountID, threadDelayCheckEmail;
+    private static boolean startApiCheckAccountID, startApiCheckEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +53,8 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
         activityRegisterBinding.getRegisterViewModel().setStatusAddress(false);
         activityRegisterBinding.getRegisterViewModel().setStatusPhoneNumber(false);
         activityRegisterBinding.getRegisterViewModel().setStatusEmail(true);
-        activityRegisterBinding.getRegisterViewModel().displayPrgBar.set(false);
-
+        activityRegisterBinding.getRegisterViewModel().displayAccountIDPrgBar.set(false);
+        activityRegisterBinding.getRegisterViewModel().displayEmailPrgBar.set(false);
     }
 
     @BindingAdapter("accountID")
@@ -66,14 +63,14 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
             return;
         }
         //Ngắt threadDelay nếu thread đang chạy
-        if(threadDelay != null) {
-            if(threadDelay.isAlive()) {
-                threadDelay.interrupt();
+        if(threadDelayCheckAccountID != null) {
+            if(threadDelayCheckAccountID.isAlive()) {
+                threadDelayCheckAccountID.interrupt();
             }
         }
         Context context = view.getContext();
-        registerViewModel.displayPrgBar.set(false);
-        startObservable = false;
+        registerViewModel.displayAccountIDPrgBar.set(false);
+        startApiCheckAccountID = false;
         boolean statusFirstChar = false;
         boolean statusLength = false;
         boolean statusNumber = false;
@@ -107,69 +104,47 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
         if(statusFirstChar && statusLength && statusNumber) {
             view.setError(null);
             view.setHelperText("");
-            //Sau khi dừng nhập dữ liệu 3s AccountID sẽ chạy Observable gửi dữ liệu về Server để check AccountID hợp lệ
-            threadDelay = new Thread(new Runnable() {
+            //Sau khi dừng nhập dữ liệu 2s AccountID sẽ GET api để check AccountID hợp lệ
+            threadDelayCheckAccountID = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         Thread.sleep(1500);
-                        registerViewModel.displayPrgBar.set(true);
+                        registerViewModel.displayAccountIDPrgBar.set(true);
                         Thread.sleep(500);
-                        startObservable = true;
+                        startApiCheckAccountID = true;
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if(startObservable) {
-                        // Create the Observable
-                        Observable<String> singleTaskObservable = Observable
-                            .create(new ObservableOnSubscribe<String>() {
-                                @Override
-                                public void subscribe(ObservableEmitter<String> emitter) throws Exception {
-                                    if (!emitter.isDisposed()) {
-                                        emitter.onNext(registerViewModel.checkAccountID());
-                                        emitter.onComplete();
+                    if(startApiCheckAccountID) {
+                        ApiService.apiService.checkAccountID(accountID).enqueue(new Callback<Boolean>() {
+                            @Override
+                            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                                if (response.body() != null) {
+                                    boolean accountIDExist = response.body();
+                                    if (!accountIDExist) {
+                                        view.setHelperTextColor(ColorStateList.valueOf(ContextCompat.getColor(context,
+                                                R.color.green)));
+                                        view.setHelperText("AccountID hợp lệ");
+                                        registerViewModel.setStatusAccountID(true);
+                                        registerViewModel.displayAccountIDPrgBar.set(false);
+                                    } else {
+                                        view.setError("AccountID đã tồn tại");
+                                        registerViewModel.setStatusAccountID(false);
+                                        registerViewModel.displayAccountIDPrgBar.set(false);
                                     }
                                 }
-                            })
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread());
-
-                        // Subscribe to the Observable and get the emitted object
-                        singleTaskObservable.subscribe(new Observer<String>() {
-                            @Override
-                            public void onSubscribe(Disposable d) {
-
                             }
 
                             @Override
-                            public void onNext(String messFromServer) {
-                                if (messFromServer.equals("AccountIDValid")) {
-                                    view.setHelperTextColor(ColorStateList.valueOf(ContextCompat.getColor(context,
-                                            R.color.green)));
-                                    view.setHelperText("AccountID hợp lệ");
-                                    registerViewModel.setStatusAccountID(true);
-                                    registerViewModel.displayPrgBar.set(false);
-                                } else {
-                                    view.setError("AccountID đã tồn tại");
-                                    registerViewModel.setStatusAccountID(false);
-                                    registerViewModel.displayPrgBar.set(false);
-                                }
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-
-                            }
-
-                            @Override
-                            public void onComplete() {
+                            public void onFailure(Call<Boolean> call, Throwable t) {
 
                             }
                         });
                     }
                 }
             });
-            threadDelay.start();
+            threadDelayCheckAccountID.start();
 
         }
     }
@@ -278,9 +253,16 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
 
     @BindingAdapter("email")
     public static void setErrorEmail(TextInputLayout view, String email) {
+        registerViewModel.displayEmailPrgBar.set(false);
         if(email == null) {
             return;
         }
+        if(threadDelayCheckEmail != null) {
+            if(threadDelayCheckEmail.isAlive()) {
+                threadDelayCheckEmail.interrupt();
+            }
+        }
+        startApiCheckEmail = false;
         if(!email.equals("")) {
             view.setErrorIconDrawable(0);
             if (!email.matches("^[a-zA-Z0-9_-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+$")) {
@@ -288,10 +270,46 @@ public class RegisterActivity extends AppCompatActivity implements ContractRegis
                 registerViewModel.setStatusEmail(false);
             } else {
                 view.setError(null);
-                registerViewModel.setStatusEmail(true);
+                //Sau khi dừng nhập dữ liệu 2s AccountID sẽ GET api để check AccountID hợp lệ
+                threadDelayCheckEmail = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(1500);
+                            registerViewModel.displayEmailPrgBar.set(true);
+                            Thread.sleep(500);
+                            startApiCheckEmail = true;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if(startApiCheckEmail) {
+                            ApiService.apiService.checkEmail(email).enqueue(new Callback<Boolean>() {
+                                @Override
+                                public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                                    if (response.body() != null) {
+                                        boolean emailExist = response.body();
+                                        if (!emailExist) {
+                                            view.setError(null);
+                                            registerViewModel.setStatusEmail(true);
+                                            registerViewModel.displayEmailPrgBar.set(false);
+                                        }else{
+                                            view.setError("Email đã được sử dụng");
+                                            registerViewModel.setStatusEmail(false);
+                                            registerViewModel.displayEmailPrgBar.set(false);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Boolean> call, Throwable t) {
+
+                                }
+                            });
+                        }
+                    }
+                });
+                threadDelayCheckEmail.start();
             }
-        }else {
-            registerViewModel.setStatusEmail(true);
         }
     }
 

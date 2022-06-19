@@ -32,86 +32,11 @@ public class TransferMoneyDialog extends DialogFragment {
         dialogTransferMoneyBinding.getAccountViewModel().transferSuccess.set(false);
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        //Phải tạo TextWatcher riêng, rồi bỏ vào edittext.addTextChangedListener(textWatcher)
-//        TextWatcher textWatcher = new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//                String current = "";
-//                if (!editable.toString().equals(current)) {
-//                    txtMoneyTransfer.removeTextChangedListener(this);
-//                    String originalString = txtMoneyTransfer.getText().toString();
-//                    if (originalString.isEmpty()) {
-//                        return;
-//                    }
-//                    if (originalString.contains(".")) {
-//                        originalString = originalString.replaceAll("\\.", "");
-//                    }
-//                    BigDecimal bd = new BigDecimal(originalString);
-//
-//                    DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-//                    DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
-//
-//                    symbols.setGroupingSeparator('.');
-//                    formatter.setDecimalFormatSymbols(symbols);
-//
-//                    String formatted = formatter.format(bd);
-//
-//                    current = formatted;
-//                    txtMoneyTransfer.setText(formatted);
-//                    txtMoneyTransfer.setSelection(formatted.length());
-//                    txtMoneyTransfer.addTextChangedListener(this);
-//                }
-//            }
-//        };
-//        txtMoneyTransfer.addTextChangedListener(textWatcher);
         builder.setView(dialogTransferMoneyBinding.getRoot()).setTitle("Transfer Money");
 
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-//                // User clicked OK button
-//                String accountID2 = String.valueOf(txtAccountID2.getText());
-//                String sMoneyTransfer =String.valueOf(txtMoneyTransfer.getText());
-//                if(accountID2.equals("") || sMoneyTransfer.equals("")){
-//                    lblStatusTransferMoney.setText("Please input info transfer");
-////                    dialog.dismiss();
-//                    return;
-//                }
-//                BigDecimal moneyTransfer = new BigDecimal(sMoneyTransfer);
-//
-//                if(moneyTransfer.compareTo(new BigDecimal("10000")) <0){
-//                    lblStatusTransferMoney.setText("Money transfer >= 10000");
-//                }
-//
-//                if(moneyTransfer.compareTo(account.getAccountBalance()) <0){
-//                    lblStatusTransferMoney.setText("The account does not have enough money");
-//                }
-//
-//                NetworkImpl modelNetwork = new NetworkImpl();
-//                modelNetwork.createConnect();
-//                modelNetwork.sendDataTCP("transfermoney#" + account.getAccountID() + "#" + txtAccountID2 + "#" + moneyTransfer);
-//                modelNetwork.readDataTCP();
-//                String mesRecv = "";
-//                mesRecv = modelNetwork.getMesFromServer();
-//                if(mesRecv.equals("transfermoneysuccess")){
-//                    //Cập nhật lại Account trong AccountActivity
-//                    accountActivity.setAccount(account);
-////                    accountActivity.setLblAccountBalance();
-//                    //Dismiss once everything is OK.
-//                    dialog.dismiss();
-//                }else if(mesRecv.equals("transfermoneyWrongID")){
-//                    lblStatusTransferMoney.setText("accountID incorrect");
-//                    return;
-//                }
+                //Empty, because we will overide this function
             }
         });
 

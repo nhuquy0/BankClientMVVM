@@ -7,10 +7,9 @@ import androidx.databinding.Bindable;
 import androidx.databinding.ObservableField;
 
 import com.example.bankclientmvvm.Account;
-import com.example.bankclientmvvm.api.ApiService;
 import com.example.bankclientmvvm.BR;
+import com.example.bankclientmvvm.api.ApiService;
 import com.example.bankclientmvvm.api.EmptyCallback;
-import com.example.bankclientmvvm.NetworkImpl;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -29,12 +28,10 @@ public class LoginViewModel extends BaseObservable{
     public ObservableField<String> statusLogin = new ObservableField<>();
 
     private final ContractLogin.LoginView mainLoginView;
-    private final NetworkImpl modelNetwork;
     Account account;
 
     public LoginViewModel(ContractLogin.LoginView mainLoginView) {
         this.mainLoginView = mainLoginView;
-        modelNetwork = new NetworkImpl();
         account = new Account();
         flagShowHide = true;
 

@@ -1,19 +1,21 @@
 package com.example.bankclientmvvm.register;
 
+import android.util.Log;
+
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
-import androidx.databinding.BindingAdapter;
 import androidx.databinding.ObservableArrayList;
 import androidx.databinding.ObservableField;
 
 import com.example.bankclientmvvm.Account;
 import com.example.bankclientmvvm.BR;
-import com.example.bankclientmvvm.NetworkImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.material.textfield.TextInputLayout;
+import com.example.bankclientmvvm.api.ApiService;
 
 import org.mindrot.jbcrypt.BCrypt;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class RegisterViewModel extends BaseObservable {
     private String regAccountID, regPassword, regConfirmPassword, regFirstName, regLastName, regCountry, regCity, regAddress, regPhoneNumber, regEmail;
@@ -23,19 +25,18 @@ public class RegisterViewModel extends BaseObservable {
     public ObservableField<String> statusRegister;
     public ObservableArrayList<String> citiesArrayList;
     public ObservableArrayList<String> countriessArrayList;
-    public ObservableField<Boolean> statusCheckAccountID, displayPrgBar;
+    public ObservableField<Boolean> statusCheckAccountID, displayAccountIDPrgBar, displayEmailPrgBar;
 
     private final ContractRegister registerActivity;
-    private final NetworkImpl modelNetwork;
 
     public RegisterViewModel(ContractRegister registerActivity) {
         this.registerActivity = registerActivity;
-        this. modelNetwork = new NetworkImpl();
         citiesArrayList = new ObservableArrayList<>();
         countriessArrayList = new ObservableArrayList<>();
         statusRegister = new ObservableField<>();
         statusCheckAccountID = new ObservableField<>();
-        displayPrgBar = new ObservableField<>();
+        displayAccountIDPrgBar = new ObservableField<>();
+        displayEmailPrgBar = new ObservableField<>();
     }
 
     public void setStatusAccountID(boolean statusAccountID) {
@@ -220,45 +221,25 @@ public class RegisterViewModel extends BaseObservable {
         notifyPropertyChanged(BR.regEmail);
     }
 
-    private void setStatusRegister(String s){
-        statusRegister.set(s);
-    }
-
     public void register(){
         String regPassword = BCrypt.hashpw(String.valueOf(getRegPassword()),BCrypt.gensalt(12));
         Account account = new Account(getRegAccountID(), regPassword, getRegFirstName(),getRegLastName(),getRegAddress(),getRegCity(),getRegCountry(),getRegPhoneNumber(),getRegEmail());
 
-        //Chuyển Account thành JsonString rồi gửi qua Server
-        ObjectMapper Obj = new ObjectMapper();
-        String jsonStr = null;
-        try {
-            jsonStr = Obj.writeValueAsString(account);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        modelNetwork.setIPAddress("192.168.1.102");
-        modelNetwork.createConnect();
-        modelNetwork.sendDataTCP("register" + "#" + jsonStr);
-        modelNetwork.readDataTCP();
-        String mesRecv = "";
-        mesRecv = modelNetwork.getMesFromServer();
-        //Tin nhắn từ Server RegisterSuccess thì chuyển Activity
-        if(mesRecv.equals("RegisterSuccess")){
-            registerActivity.showToast("Register Success");
-            registerActivity.changeToLoginActivity();
-        }else if(mesRecv.equals("accountIDExistsed")){
-            setStatusRegister("accountID existsed! Please input another accountID.");
-        }
-    }
+        //Gửi Account qua Server
+        ApiService.apiService.register(account).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                //Nếu thành công thì hiện Toast
+                if(Boolean.TRUE.equals(response.body())){
+                    registerActivity.showToast("Register Success");
+                    registerActivity.changeToLoginActivity();
+                }
+            }
 
-    public String checkAccountID(){
-        modelNetwork.setIPAddress("192.168.1.102");
-        modelNetwork.createConnect();
-        modelNetwork.sendDataTCP("checkAccountID" + "#" + getRegAccountID());
-        modelNetwork.readDataTCP();
-        String mesRecv = "";
-        mesRecv = modelNetwork.getMesFromServer();
-        //Tin nhắn từ Server RegisterSuccess thì chuyển Activity
-        return mesRecv;
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Log.e("Register",String.valueOf(t));
+            }
+        });
     }
 }

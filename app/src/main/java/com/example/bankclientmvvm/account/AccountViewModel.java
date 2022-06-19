@@ -9,10 +9,7 @@ import androidx.databinding.ObservableField;
 
 import com.example.bankclientmvvm.Account;
 import com.example.bankclientmvvm.BR;
-import com.example.bankclientmvvm.NetworkImpl;
 import com.example.bankclientmvvm.api.ApiService;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,7 +27,6 @@ import retrofit2.Response;
 public class AccountViewModel extends BaseObservable {
 
     private Account account;
-    private final NetworkImpl modelNetwork;
     private final ContractAccount.AccountView mainAccountView;
 
     private int selectedCityPosition;
@@ -49,7 +45,6 @@ public class AccountViewModel extends BaseObservable {
     public AccountViewModel(ContractAccount.AccountView mainAccountView) {
         this.mainAccountView = mainAccountView;
         account = new Account();
-        modelNetwork = new NetworkImpl();
         accountBalanceShow = new ObservableField<>();
         statusHideShow = new ObservableField<>();
         statusEditProfile = new ObservableField<>();

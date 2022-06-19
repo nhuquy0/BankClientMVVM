@@ -342,9 +342,20 @@
                 android:layout_height="15dp"
                 android:layout_marginTop="25dp"
                 android:layout_marginEnd="40dp"
-                app:showPrgBar="@{RegisterViewModel.displayPrgBar}"
+                app:showPrgBar="@{RegisterViewModel.displayAccountIDPrgBar}"
                 app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
                 app:layout_constraintTop_toTopOf="@+id/textInputLayout" />
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="40dp"
+                app:layout_constraintEnd_toEndOf="@+id/textInputLayout7"
+                app:layout_constraintTop_toTopOf="@+id/textInputLayout7"
+                app:showPrgBar="@{RegisterViewModel.displayEmailPrgBar}" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
